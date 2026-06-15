@@ -1,0 +1,46 @@
+# Version control and editor state
+.git/
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local Python/R environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.Rhistory
+.RData
+.renv/
+renv/
+
+# Node and build artifacts
+node_modules/
+dist/
+build/
+target/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+id_rsa
+id_ed25519
+*.pem
+*.key
+credentials.json
+
+# Large or regenerated outputs
+hpc_results/
+slurm-*.out
+slurm-*.err
+*.log
+*.tmp
+*.bak

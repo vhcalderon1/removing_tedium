@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/hpc-common.sh"
+
+ssh "${HPC_SSH_TARGET}" 'set -e
+echo "Current queue:"
+squeue --me
+echo
+echo "Recent accounting records:"
+sacct -u "$USER" -S "$(date +%Y-%m-%d)" \
+  -o jobid%16,jobname%24,state%14,elapsed,timelimit,ncpus,nnodes,reqmem,exitcode -X 2>/dev/null || true
+'

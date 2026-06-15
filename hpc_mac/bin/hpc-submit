@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/hpc-common.sh"
+
+SYNC_FIRST=1
+if [[ "${1:-}" == "--no-sync" ]]; then
+  SYNC_FIRST=0
+  shift
+fi
+
+REMOTE_SCRIPT="${1:-${HPC_SLURM_SCRIPT}}"
+
+if [[ "${SYNC_FIRST}" == "1" ]]; then
+  bash "${SCRIPT_DIR}/hpc-sync-to-cluster"
+fi
+
+echo "Submitting ${REMOTE_SCRIPT} from ${HPC_SSH_TARGET}:${HPC_REMOTE_DIR}"
+ssh "${HPC_SSH_TARGET}" \
+  "cd $(hpc_quote "${HPC_REMOTE_DIR}") && sbatch $(hpc_quote "${REMOTE_SCRIPT}")"

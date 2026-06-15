@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+HPC_BUNDLE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+HPC_PROJECT_DIR="$(cd "${HPC_BUNDLE_DIR}/.." && pwd -P)"
+ENV_FILE="${HPC_PROJECT_DIR}/hpc.env"
+
+if [[ -f "${ENV_FILE}" ]]; then
+  echo "Found existing ${ENV_FILE}"
+else
+  cp "${HPC_BUNDLE_DIR}/hpc.env.example" "${ENV_FILE}"
+  echo "Created ${ENV_FILE}"
+fi
+
+chmod u+x "${HPC_BUNDLE_DIR}"/bin/hpc-* 2>/dev/null || true
+mkdir -p "${HPC_PROJECT_DIR}/hpc_results"
+
+cat <<EOF
+
+Next steps:
+  1. Edit hpc.env with your cluster values.
+  2. Copy a template, for example:
+       cp hpc_mac/templates/job.slurm job.slurm
+  3. Edit job.slurm for your program.
+  4. Sync and submit:
+       bash hpc_mac/bin/hpc-sync-to-cluster
+       bash hpc_mac/bin/hpc-submit
+
+Optional shell helpers:
+  source hpc_mac/hpc_aliases.sh
+EOF

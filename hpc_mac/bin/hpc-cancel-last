@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/hpc-common.sh"
+
+ssh "${HPC_SSH_TARGET}" 'jobid=$(squeue --me -o "%i" -S i -h | tail -n 1)
+if [ -z "${jobid}" ]; then
+  echo "No running or pending jobs found."
+else
+  scancel "${jobid}"
+  echo "Canceled job ${jobid}"
+fi
+'

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/hpc-common.sh"
+
+echo "Opening shell on ${HPC_SSH_TARGET}:${HPC_REMOTE_DIR}"
+ssh -t "${HPC_SSH_TARGET}" "cd $(hpc_quote "${HPC_REMOTE_DIR}") && exec \${SHELL:-/bin/bash} -l"

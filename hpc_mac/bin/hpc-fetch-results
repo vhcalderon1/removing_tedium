@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+# shellcheck disable=SC1091
+source "${SCRIPT_DIR}/hpc-common.sh"
+
+FETCH_ALL=0
+if [[ "${1:-}" == "--all" ]]; then
+  FETCH_ALL=1
+fi
+
+mkdir -p "${HPC_LOCAL_RESULTS_DIR}"
+
+if [[ "${FETCH_ALL}" == "1" ]]; then
+  echo "Fetching complete remote project into ${HPC_LOCAL_RESULTS_DIR}/"
+  rsync -azP \
+    --exclude-from="${HPC_EXCLUDES}" \
+    "${HPC_SSH_TARGET}:${HPC_REMOTE_DIR}/" \
+    "${HPC_LOCAL_RESULTS_DIR}/"
+else
+  echo "Fetching common Slurm outputs and result folders into ${HPC_LOCAL_RESULTS_DIR}/"
+  rsync -azP \
+    --include='*/' \
+    --include='slurm-*.out' \
+    --include='slurm-*.err' \
+    --include='*.log' \
+    --include='results/***' \
+    --include='output/***' \
+    --include='outputs/***' \
+    --include='figures/***' \
+    --exclude='*' \
+    "${HPC_SSH_TARGET}:${HPC_REMOTE_DIR}/" \
+    "${HPC_LOCAL_RESULTS_DIR}/"
+fi
+
+echo "Fetch complete."

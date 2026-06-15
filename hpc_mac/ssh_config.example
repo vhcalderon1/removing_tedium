@@ -1,0 +1,76 @@
+# Copy relevant stanzas into ~/.ssh/config on your Mac.
+# Replace YOUR_NETID, host names, and aliases before use.
+#
+# Recommended permissions:
+#   chmod 700 ~/.ssh
+#   chmod 600 ~/.ssh/config
+#   mkdir -p ~/.ssh/sockets
+#   chmod 700 ~/.ssh/sockets
+
+Host *
+  ServerAliveInterval 300
+  ServerAliveCountMax 4
+  AddKeysToAgent yes
+  UseKeychain yes
+
+# Optional gateway/proxy host. Many centers require a bastion, VPN, or gateway
+# before login nodes are reachable from off campus.
+Host hpc-gateway
+  HostName YOUR_GATEWAY_HOST
+  User YOUR_NETID
+  ControlMaster auto
+  ControlPersist yes
+  ControlPath ~/.ssh/sockets/%p-%h-%r
+
+# Generic cluster login node with multiplexing.
+Host myhpc
+  HostName YOUR_CLUSTER_LOGIN_HOST
+  User YOUR_NETID
+  ControlMaster auto
+  ControlPersist yes
+  ControlPath ~/.ssh/sockets/%p-%h-%r
+  # ProxyJump hpc-gateway
+
+# Princeton-style examples. Keep only hosts where you have access.
+Host tigressgateway tigressgateway.princeton.edu
+  HostName tigressgateway.princeton.edu
+  User YOUR_NETID
+  ControlMaster auto
+  ControlPersist yes
+  ControlPath ~/.ssh/sockets/%p-%h-%r
+  ServerAliveInterval 300
+
+Host della della.princeton.edu
+  HostName della.princeton.edu
+  User YOUR_NETID
+  ProxyJump tigressgateway
+  ControlMaster auto
+  ControlPersist yes
+  ControlPath ~/.ssh/sockets/%p-%h-%r
+
+Host adroit adroit.princeton.edu
+  HostName adroit.princeton.edu
+  User YOUR_NETID
+  ControlMaster auto
+  ControlPersist yes
+  ControlPath ~/.ssh/sockets/%p-%h-%r
+
+Host stellar stellar-intel stellar-intel.princeton.edu
+  HostName stellar-intel.princeton.edu
+  User YOUR_NETID
+  ProxyJump tigressgateway
+  ControlMaster auto
+  ControlPersist yes
+  ControlPath ~/.ssh/sockets/%p-%h-%r
+
+Host tiger tiger.princeton.edu
+  HostName tiger.princeton.edu
+  User YOUR_NETID
+  ProxyJump tigressgateway
+  ControlMaster auto
+  ControlPersist yes
+  ControlPath ~/.ssh/sockets/%p-%h-%r
+
+# Multiplexing checks:
+#   ssh -O check myhpc
+#   ssh -O stop myhpc
